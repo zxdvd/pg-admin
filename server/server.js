@@ -14,9 +14,7 @@ app.use(router.routes())
 app.use(router.allowedMethods())
 
 
-router.get('/api/test', (c, next) => c.body = 'ni hao')
-
-router.get('/api/query', api.handleQuery)
+router.post('/api/query', api.handleQuery)
 router.post('/api/connect', api.handleConnect)
 
 

@@ -7,9 +7,8 @@
 <script>
 import store from './vuex/store'
 
+window.store = store
 export default {
   store,
-  data () {
-  }
 }
 </script>

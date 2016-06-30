@@ -5,10 +5,11 @@ import middlewares from './middlewares'
 Vue.use(Vuex)
 
 const state = {
-  currentCon: '',
+  currentCon: localStorage.getItem('currentCon') || '',
   connections: {},
   schemas: {},
-  currentSchemas: {},
+  tables: {},
+  currentSchemas: JSON.parse(localStorage.getItem('currentSchemas')) || {},
 }
 
 const mutations = {
@@ -21,6 +22,12 @@ const mutations = {
       schemas[item.table_schema] = item.tables.split(/,/)
     }
     Vue.set(state, 'currentSchemas', schemas)
+  },
+  GET_TABLE_ROW (state, table, data) {
+    if (data && data.length) {
+      const header = Object.keys(data[0])
+      Vue.set(state.tables, table, { header, data})
+    }
   }
 }
 

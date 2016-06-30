@@ -13,17 +13,10 @@ exports.handleConnect = async function (c) {
 }
 
 exports.handleQuery = async function (c) {
-  await new Promise((resolve, reject) => {
-    dbs.test.connect((err, client, done) => {
-      if (err) throw(`failed to connect to the database, ${err}`, 400)
-      client.query('select * from pg_admin', (err, result) => {
-        done()
-        if (err)
-          return console.error('error', err)
-        c.body = result
-        resolve()
-      })
-    })
-  })
-
+  const { uri, query } = c.request.body
+  if (!dbs[uri])
+    dbs[uri] = pgp(uri)
+  const data = await dbs[uri].any(query)
+  console.log('data', data)
+  c.body = data
 }

@@ -1,7 +1,8 @@
 
 const localStorageMiddleware = {
-  onMutation (mutation, { currentCon }) {
-    localStorage.setItem('currentCon', JSON.stringify(currentCon))
+  onMutation (mutation, { currentCon, currentSchemas }) {
+    localStorage.setItem('currentCon', currentCon)
+    localStorage.setItem('currentSchemas', JSON.stringify(currentSchemas))
   }
 }
 

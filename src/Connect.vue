@@ -51,11 +51,11 @@
 export default {
   data () {
     return {
-      host: '',
+      host: 'localhost',
       username: '',
       password: '',
       database: '',
-      port: '',
+      port: '5432',
     }
   },
   vuex: {
@@ -70,7 +70,7 @@ export default {
   methods: {
     connect() {
       var uri = `postgres://${this.username}:${this.password}@${this.host}:${this.port}/${this.database}`
-      uri = 'postgres://test:123456@localhost:5432/pigai_gk'
+      // uri = 'postgres://psql:123456@zxd:5432/pigai_gk'
       fetch('/api/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
