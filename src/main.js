@@ -10,6 +10,10 @@ import Home from './Home.vue'
 
 Vue.use(Router)
 
+Vue.filter('showNull', function(val) {
+  return val === null ? 'null': val
+})
+
 var router = new Router({
   hashbang: false,
   linkActiveClass: 'active',

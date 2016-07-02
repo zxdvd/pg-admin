@@ -4,92 +4,80 @@
       <p class="menu-label">
         Schemas
       </p>
-      <select v-model="selectedSchema">
-        <option v-for="item in schemas" v-bind:value="$key">{{ $key }}</option>
-      </select>
+      <span class="select">
+        <select v-model="selectedSchema">
+          <option v-for="item in schemas" v-bind:value="$key">{{ $key }}</option>
+        </select>
+      </span>
       <p class="menu-label">
         Tables
       </p>
       <ul class="menu-list">
         <li v-for="t in schemas[selectedSchema]">
-          <a href="#" @click="getTableInfo(t)">{{ t }}</a>
+          <a :class="{'is-active': t === currentTable}" href="#" @click="setState('currentTable', t)">{{ t }}</a>
         </li>
       </ul>
     </aside>
 
-    <div class="column">
+    <div class="column autoflow">
       <div class="tabs">
         <ul>
-          <li><a>Structure</a></li>
-          <li><a>Content</a></li>
+          <li :class="{'is-active': item === tab}" v-for="item in tabs">
+            <a @click="tab = item">{{ item }}</a>
+          </li>
         </ul>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th v-for="item in header">{{ item }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in rows">
-            <td v-for="item in row " @dblclick="changeRowData">{{ item }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div v-show="tab === 'Content'">
+        <Show-Table></Show-Table>
+      </div>
+      <div v-show="tab === 'Structure'">
+        <Structure></Structure>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
-import { getTable } from './vuex/actions/api'
+import ShowTable from './ShowTable.vue'
+import Structure from './Structure.vue'
+import { getColumns, getPrimaryKey } from './vuex/getters'
+import { query, getTableIndex, getTableColumn } from './utils'
 
 export default {
   data () {
     return {
       selectedSchema: 'public',
-      selectedTable: null,
+      tabs: ['Structure', 'Content', 'Query'],
+      tab: 'Content',
+      rows: [],
+      dblclickedHeader: '',
     }
   },
-  created() {
-    console.log('schema', this.schemas)
-  },
-  computed: {
-    header: function () {
-      if (this.selectedTable && this.tables[this.selectedTable])
-        return this.tables[this.selectedTable].header || []
-    },
-    rows: function () {
-      if (this.selectedTable && this.tables[this.selectedTable])
-        return this.tables[this.selectedTable].data || []
-    },
+  components: {
+    ShowTable,
+    Structure,
   },
   vuex: {
     getters: {
       currentCon: state => state.currentCon,
       schemas: state => state.currentSchemas,
       tables: state => state.tables,
+      currentTable: state => state.currentTable,
     },
     actions: {
-      changeCon: ({ dispatch }, con) => dispatch('CHANGE_CON', con),
+      setState: ({ dispatch }, key, value) => dispatch('SET_STATE', key, value),
       setSchemas: ({ dispatch }, uri, data) => dispatch('SET_SCHEMAS', uri, data),
-      getTable: getTable,
     }
   },
-  methods: {
-    getTableInfo(t) {
-      this.selectedTable = t
-      this.getTable(t)
-    },
-    changeRowData() {
-
-    },
-  }
 }
 </script>
 
 <style lang="sass">
 body {
   font-family: Helvetica, sans-serif;
+}
+.autoflow {
+  overflow: auto;
 }
 </style>

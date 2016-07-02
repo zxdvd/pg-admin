@@ -48,6 +48,8 @@
 </template>
 
 <script>
+import { query } from './utils'
+
 export default {
   data () {
     return {
@@ -63,30 +65,23 @@ export default {
       currentCon: state => state.currentCon
     },
     actions: {
-      changeCon: ({ dispatch }, con) => dispatch('CHANGE_CON', con),
+      setState: ({ dispatch }, key, value) => dispatch('SET_STATE', key, value),
       setSchemas: ({ dispatch }, uri, data) => dispatch('SET_SCHEMAS', uri, data),
     }
   },
   methods: {
-    connect() {
+    async connect() {
+      console.log('begin connect')
       var uri = `postgres://${this.username}:${this.password}@${this.host}:${this.port}/${this.database}`
-      // uri = 'postgres://psql:123456@zxd:5432/pigai_gk'
-      fetch('/api/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uri: uri }),
-      })
-        .then(res => {
-          if (res.ok) {
-            this.changeCon(uri)
-            return res.json()
-          }
-        })
-        .then(json => {
-          this.setSchemas(uri, json)
-          this.$router.go('/db')
-        })
-        .catch(e => console.log('failed to connect', e))
+      uri = 'postgres://psql:123456@zxd:5432/pigai_gk'
+      const sql = `SELECT table_schema,string_agg(table_name, ',') as tables FROM information_schema.tables GROUP BY table_schema;`
+      const data = await query(uri, sql)
+      if (data) {
+        this.setState('currentCon', uri)
+        this.setSchemas(uri, data)
+        this.$router.go('/db')
+      }
+      console.log('failed to connect to host!')
     }
   }
 }

@@ -1,21 +1,21 @@
 const Koa = require('koa')
-const router = require('koa-router')()
 const bodyParser = require('koa-bodyparser')
+const pgp = require('pg-promise')()
 
 const config = require('./config')
-const api = require('./api')
+
+global.dbs = {}
 
 const app = new Koa()
 
-app.keys = config.keys
-
 app.use(bodyParser())
-app.use(router.routes())
-app.use(router.allowedMethods())
 
-
-router.post('/api/query', api.handleQuery)
-router.post('/api/connect', api.handleConnect)
+app.use(async (c, next) => {
+  const { uri, query } = c.request.body
+  if (!dbs[uri])
+    dbs[uri] = pgp(uri)
+  c.body = await dbs[uri].any(query)
+})
 
 
 app.listen(config.port || 3000)

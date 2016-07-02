@@ -5,16 +5,25 @@ import middlewares from './middlewares'
 Vue.use(Vuex)
 
 const state = {
-  currentCon: localStorage.getItem('currentCon') || '',
+  currentCon: sessionStorage.getItem('currentCon') || '',
   connections: {},
-  schemas: {},
-  tables: {},
-  currentSchemas: JSON.parse(localStorage.getItem('currentSchemas')) || {},
+  currentSchemas: JSON.parse(sessionStorage.getItem('currentSchemas')) || {},
+  currentTable: sessionStorage.getItem('currentTable') || '',
+  currentTableSchema: {},
+  tableInfo: JSON.parse(sessionStorage.getItem('tableInfo')) || {},
 }
 
 const mutations = {
-  CHANGE_CON (state, con) {
-    state.currentCon = con
+  SET_STATE (state, key, value) {
+    const dotIndex = key.lastIndexOf('.')
+    //deal with nested key
+    if (dotIndex > -1) {
+      const attr1 = key.slice(0, dotIndex)
+      const attr2 = key.slice(dotIndex + 1)
+      Vue.set(state[attr1], attr2, value)
+    } else {
+      Vue.set(state, key, value)
+    }
   },
   SET_SCHEMAS (state, uri, data) {
     const schemas = {}
@@ -23,12 +32,6 @@ const mutations = {
     }
     Vue.set(state, 'currentSchemas', schemas)
   },
-  GET_TABLE_ROW (state, table, data) {
-    if (data && data.length) {
-      const header = Object.keys(data[0])
-      Vue.set(state.tables, table, { header, data})
-    }
-  }
 }
 
 export default new Vuex.Store({
