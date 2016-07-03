@@ -1,6 +1,8 @@
 
 export const query = function (uri, sql, {page = 1, pageSize = 20, noPagination} = {}) {
   if (!noPagination) {
+    if (page < 1)
+      page = 1
     const offset = (page - 1) * pageSize
     sql = sql + ` limit ${pageSize} offset ${offset}`
   }

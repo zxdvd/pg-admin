@@ -27,20 +27,16 @@
           </li>
         </ul>
       </div>
-      <div v-show="tab === 'Content'">
-        <Show-Table></Show-Table>
-      </div>
-      <div v-show="tab === 'Structure'">
-        <Structure></Structure>
-      </div>
+      <component :is="tab" keep-alive></component>
     </div>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
-import ShowTable from './ShowTable.vue'
+import Content from './Content.vue'
 import Structure from './Structure.vue'
+import Query from './Query.vue'
 import { getColumns, getPrimaryKey } from './vuex/getters'
 import { query, getTableIndex, getTableColumn } from './utils'
 
@@ -55,8 +51,9 @@ export default {
     }
   },
   components: {
-    ShowTable,
+    Content,
     Structure,
+    Query,
   },
   vuex: {
     getters: {
@@ -68,6 +65,13 @@ export default {
     actions: {
       setState: ({ dispatch }, key, value) => dispatch('SET_STATE', key, value),
       setSchemas: ({ dispatch }, uri, data) => dispatch('SET_SCHEMAS', uri, data),
+    }
+  },
+  created() {
+    if (!this.currentCon) {
+      console.log('created')
+      this.$router.stop()
+      this.$router.go('/connect')
     }
   },
 }

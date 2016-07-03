@@ -15,8 +15,9 @@
           <td @dblclick="renaming=col.attname">
             <input type="text"
               value="{{col.attname}}"
-              v-get_focus="renaming === col.attname"
+              v-focus="renaming === col.attname"
               v-show="renaming === col.attname"
+              @blur="renaming = ''"
               @keyup.esc="renaming = ''"
               @keyup.enter="renamingCol($event)">
             <span v-else>{{ col.attname }}</span>
@@ -118,19 +119,6 @@ export default {
       this.renaming = ''
       this.getTableInfo(this.currentTable)
     },
-  },
-  directives: {
-    //focus to the input box after double clicked and set the mouse cursor to the end of text
-    get_focus(val) {
-      if (!val)
-        return
-      Vue.nextTick(() => {
-        this.el.focus()
-        const val = this.el.value
-        this.el.value = ''
-        this.el.value = val
-      })
-    }
   },
 }
 </script>

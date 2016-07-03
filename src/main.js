@@ -10,6 +10,17 @@ import Home from './Home.vue'
 
 Vue.use(Router)
 
+Vue.directive('focus', function (val) {
+  if (!val)
+    return
+  Vue.nextTick(() => {
+    this.el.focus()
+    const val = this.el.value
+    this.el.value = ''
+    this.el.value = val
+  })
+})
+
 Vue.filter('showNull', function(val) {
   return val === null ? 'null': val
 })

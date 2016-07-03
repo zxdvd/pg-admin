@@ -71,11 +71,9 @@ export default {
   },
   methods: {
     async connect() {
-      console.log('begin connect')
       var uri = `postgres://${this.username}:${this.password}@${this.host}:${this.port}/${this.database}`
-      uri = 'postgres://psql:123456@zxd:5432/pigai_gk'
       const sql = `SELECT table_schema,string_agg(table_name, ',') as tables FROM information_schema.tables GROUP BY table_schema;`
-      const data = await query(uri, sql)
+      const data = await query(uri, sql, {noPagination: true})
       if (data) {
         this.setState('currentCon', uri)
         this.setSchemas(uri, data)
