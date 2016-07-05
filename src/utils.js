@@ -1,5 +1,7 @@
 
 export const query = function (uri, sql, {page = 1, pageSize = 20, noPagination} = {}) {
+  if (!uri)
+    return
   if (!noPagination) {
     if (page < 1)
       page = 1
@@ -19,6 +21,8 @@ export const query = function (uri, sql, {page = 1, pageSize = 20, noPagination}
 }
 
 export const getTableIndex = function (uri, table) {
+  if (!uri || !table)
+    return
   const sql = ` SELECT c.oid, c.relname, a.attname, a.attnum, i.indisprimary, i.indisunique
       FROM pg_index AS i, pg_class AS c, pg_attribute AS a
       WHERE i.indexrelid = c.oid
@@ -31,6 +35,8 @@ export const getTableIndex = function (uri, table) {
 //you can get columns from information_schema or by 'select * from TABLE where false'
 //but pg_attribute has more information and is faster than information_schema
 export const getTableColumn = function (uri, table) {
+  if (!uri || !table)
+    return
   const sql = `SELECT attname, format_type(atttypid, atttypmod) as column_type, attlen, attnum, attndims, attnotnull, atthasdef, def.adsrc as default_value
       FROM pg_attribute
       LEFT JOIN pg_attrdef def ON (pg_attribute.attrelid, pg_attribute.attnum) = (def.adrelid, def.adnum)

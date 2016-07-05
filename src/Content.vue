@@ -63,7 +63,8 @@ export default {
     }
   },
   created() {
-    this.getTableInfo(this.currentTable)
+    if (this.currentCon && this.currentTable)
+      this.getTableInfo(this.currentTable)
   },
   watch: {
     'currentTable': function(val) {
